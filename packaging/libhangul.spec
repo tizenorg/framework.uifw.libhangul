@@ -41,6 +41,8 @@ to develop applications that require these.
 %{__make} %{?jobs:-j%jobs}
 
 %install
+mkdir -p %{buildroot}%{_datadir}/license
+cp COPYING %{buildroot}%{_datadir}/license/%{name}
 make DESTDIR=${RPM_BUILD_ROOT} install
 %{__rm} -f %{buildroot}%{_libdir}/*.la
 
@@ -62,6 +64,7 @@ rm -rf %{buildroot}
 %{_datadir}/libhangul/hanja/hanja.txt
 %{_bindir}/hangul
 %{_datadir}/locale/ko/LC_MESSAGES/libhangul.mo
+%{_datadir}/license/%{name}
 
 %files devel
 %defattr(-, root, root)
