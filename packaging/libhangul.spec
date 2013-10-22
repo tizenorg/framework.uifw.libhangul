@@ -1,6 +1,6 @@
 Name:           libhangul
 Version:        0.1.0
-Release:        1
+Release:        2
 License:        LGPLv2.1
 Group:          System/I18n/Korean
 AutoReqProv:    on
