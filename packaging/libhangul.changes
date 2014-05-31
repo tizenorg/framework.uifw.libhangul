@@ -1,0 +1,3 @@
+* Tue Oct 22 2013 Jihoon Kim <jihoon48.kim@samsung.com> submit/tizen_2.2/20130930.025601@3c31ddf
+- fix out-of-bounds read in hangul_jamo_to_cjamo ()
+
