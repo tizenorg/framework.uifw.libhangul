@@ -1,11 +1,12 @@
 Name:           libhangul
 Version:        0.1.0
-Release:        2
-License:        LGPLv2.1
-Group:          System/I18n/Korean
+Release:        0
+License:        LGPL-2.1
+Group:          System/Utilities
 AutoReqProv:    on
 Url:            http://code.google.com/p/libhangul
 Source0:        %{name}-%{version}.tar.gz
+Source1001:     libhangul.manifest
 Summary:        Hangul input library used by scim-hangul and ibus-hangul
 BuildRequires:  gettext-tools
 
@@ -24,7 +25,7 @@ Hangul input library used by scim-hangul and ibus-hangul
 
 %package devel
 Summary:        Include Files and Libraries mandatory for Development
-Group:          System/I18n/Korean
+Group:          System/Utilities
 Requires:       %{name} = %{version}-%{release}
 
 %description devel
@@ -34,17 +35,16 @@ to develop applications that require these.
 
 %prep
 %setup -q
+cp %{SOURCE1001} .
 
 %build
-%autogen
-%configure --disable-static --with-pic
-%{__make} %{?jobs:-j%jobs}
+[ ! -x autogen.sh ] || { rm -f configure ; %autogen ; }
+%reconfigure --disable-static --with-pic
+%__make %{?_smp_mflags}
 
 %install
-mkdir -p %{buildroot}%{_datadir}/license
-cp COPYING %{buildroot}%{_datadir}/license/%{name}
 make DESTDIR=${RPM_BUILD_ROOT} install
-%{__rm} -f %{buildroot}%{_libdir}/*.la
+rm -f %{buildroot}%{_libdir}/*.la
 
 %clean
 rm -rf %{buildroot}
@@ -56,19 +56,18 @@ rm -rf %{buildroot}
 /sbin/ldconfig
 
 %files
+%manifest %{name}.manifest
 %defattr(-, root, root)
 %doc AUTHORS COPYING NEWS README ChangeLog
 %{_libdir}/lib*.so.*
-%dir %{_datadir}/libhangul/
 %dir %{_datadir}/libhangul/hanja/
 %{_datadir}/libhangul/hanja/hanja.txt
 %{_bindir}/hangul
 %{_datadir}/locale/ko/LC_MESSAGES/libhangul.mo
-%{_datadir}/license/%{name}
 
 %files devel
+%manifest %{name}.manifest
 %defattr(-, root, root)
-%dir /usr/include/hangul-1.0/
-/usr/include/hangul-1.0/*
+%{_includedir}/hangul-1.0/*
 %{_libdir}/lib*.so
 %{_libdir}/pkgconfig/libhangul.pc
