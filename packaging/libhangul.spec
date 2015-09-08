@@ -1,96 +1,73 @@
-#sbs-git:slp/pkgs/l/libhangul libhangul 2.1.10 ff69a9eb13c322873f2fc93818273bea67f7862e
-# >> macros
-# << macros
+Name:           libhangul
+Version:        0.1.0
+Release:        0
+License:        LGPL-2.1+
+Group:          System/Utilities
+AutoReqProv:    on
+Url:            http://code.google.com/p/libhangul
+Source0:        %{name}-%{version}.tar.gz
+Source1001:     libhangul.manifest
+Summary:        Hangul input library used by scim-hangul and ibus-hangul
+BuildRequires:  gettext-tools
 
-Name:       libhangul
-Summary:    Hangul keyboard input library
-Version: 2.1.10
-Release:    2
-Group:      System/Libraries
-License:    TBD
-Source0:    %{name}-%{version}.tar.bz2
-Requires(post):  /sbin/ldconfig
-Requires(postun):  /sbin/ldconfig
-
-BuildRoot:  %{_tmppath}/%{name}-%{version}-build
 
 %description
-This library implements Hangul keyboard input with various types of Korean keyboards.  It is intended to be a base library of Korean input methods on multiple platforms.
-This package contains the shared library and the runtime data.
+Hangul input library used by scim-hangul and ibus-hangul
 
-%package data
-Summary:    Hangul keyboard input library - data
-Group:      System/Libraries
-Requires:   %{name} = %{version}-%{release}
 
-%description data
-This package contains the architecture independent data.
+Authors:
+--------
+    Choe Hwanjin <choe.hwanjin@gmail.com>
+    Joon-cheol Park <jooncheol@gmail.com>
+
+Hangul input library used by scim-hangul and ibus-hangul
 
 
 %package devel
-Summary:    Hangul keyboard input library - development files
-Group:      Development/Libraries
-Requires:   %{name} = %{version}-%{release}
+Summary:        Include Files and Libraries mandatory for Development
+Group:          System/Utilities
+Requires:       %{name} = %{version}-%{release}
 
 %description devel
-This package contains the header files and the static library.
+This package contains all necessary include files and libraries needed
+to develop applications that require these.
 
 
 %prep
-%setup -q -n %{name}-%{version}
-
-# >> setup
-# << setup
+%setup -q
+cp %{SOURCE1001} .
 
 %build
-# >> build pre
-# << build pre
+[ ! -x autogen.sh ] || { rm -f configure ; %autogen ; }
+%reconfigure --disable-static --with-pic
+%__make %{?_smp_mflags}
 
-%reconfigure --disable-static
-
-# Call make instruction with smp support
-make %{?jobs:-j%jobs}
-
-# >> build post
-# << build post
 %install
-rm -rf %{buildroot}
-# >> install pre
-# << install pre
-%make_install
-
-# >> install post
-# << install post
+make DESTDIR=${RPM_BUILD_ROOT} install
+rm -f %{buildroot}%{_libdir}/*.la
 
 %clean
 rm -rf %{buildroot}
 
+%post
+/sbin/ldconfig
 
-
-%post -p /sbin/ldconfig
-
-%postun -p /sbin/ldconfig
-
-
+%postun
+/sbin/ldconfig
 
 %files
-%defattr(-,root,root,-)
-# >> files
-%{_libdir}/lib*.so*
-# << files
-
-
-%files data
-%defattr(-,root,root,-)
-# >> files
-%{_datadir}/libhangul/*
-# << files
-
+%manifest %{name}.manifest
+%defattr(-, root, root)
+%doc AUTHORS COPYING NEWS README ChangeLog
+%{_libdir}/lib*.so.*
+%dir %{_datadir}/libhangul/hanja/
+%{_datadir}/libhangul/hanja/hanja.txt
+%{_bindir}/hangul
+%{_datadir}/locale/ko/LC_MESSAGES/libhangul.mo
 
 %files devel
-%defattr(-,root,root,-)
-# >> files devel
-%{_includedir}/hangul-1.0/*.h
-%{_libdir}/pkgconfig/*.pc
-# << files devel
-
+%manifest %{name}.manifest
+%defattr(-, root, root)
+%{_includedir}/hangul-1.0/*
+%{_libdir}/lib*.so
+%{_libdir}/pkgconfig/libhangul.pc
